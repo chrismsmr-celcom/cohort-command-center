@@ -1,14 +1,19 @@
-# Welcome to your Lovable project
+# Cohort Command Center
+
+salut j'aimerais que tu me fasse un dashboard pour ce PROJET. UN BON DASHBORD EXTREMEMENT PRO, COMME CELUI DE CREPTILE, CREWAI ETC STP
+https://github.com/chrismsmr-celcom/cerbere-cohort
+
+NE COMMIT RIEN POUR L'INSTANT, FAIT JUST UN INTERFACE UTILISATEUR POUR MOI, UNE VERSION EXEMPLE EST DANS LE DOSSIER  /web du repo
 
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/f143485c-9a49-4626-af60-63501ad9eb5a).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +25,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
