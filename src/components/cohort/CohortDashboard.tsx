@@ -6,6 +6,7 @@ import {
 import { Area, AreaChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { activity, agents, branches, conflict, events, stateKeys, type Branch } from "./data";
 import { cn } from "@/lib/utils";
+import { useActiveWorkspace } from "./WorkspaceGate";
 
 type Tab = "Vue d'ensemble" | "Agents" | "Branches" | "État partagé" | "Journal" | "Paramètres";
 const nav: { tab: Tab; icon: typeof Bot }[] = [
@@ -242,13 +243,13 @@ function EventLog() {
 }
 
 function SettingsPage() {
-  const rows = [["Stockage", "PostgreSQL"], ["Baux obligatoires", "Oui, pour les écritures"], ["Multi-processus", "Instance unique"], ["Authentification", "JWT + appartenance"], ["Transport MCP", "stdio"], ["Version", "0.4.0-beta"]];
+  const rows = [["Workspace", workspace.name], ["Workspace ID", workspace.id], ["Votre rôle", workspace.role], ["Stockage", "PostgreSQL"], ["Baux obligatoires", "Oui, pour les écritures"], ["Authentification", "Supabase Auth + membership"]];
   return (
     <>
       <PageHead eyebrow="WORKSPACE / CONFIGURATION" title="Paramètres du runtime" desc="Configuration et limites opérationnelles de cette instance Cohort." />
       <div className="grid gap-4 lg:grid-cols-2">
         <Card><CardHead title="Stockage et coordination" />{rows.map(([k, v]) => <div key={k} className="flex justify-between border-b border-border px-5 py-3 text-sm last:border-0"><span className="text-muted-foreground">{k}</span><span className="font-medium">{v}</span></div>)}</Card>
-        <Card className="p-5"><p className="text-sm font-semibold">Note de déploiement</p><p className="mt-2 text-sm text-muted-foreground">Ce déploiement est limité à une seule organisation. L'isolation multi-organisations et le MCP distant authentifié ne sont pas encore activés.</p><div className="mt-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-xs text-primary">Bêta — les API et formats d'événements peuvent changer.</div></Card>
+        <Card className="p-5"><p className="text-sm font-semibold">Note de déploiement</p><p className="mt-2 text-sm text-muted-foreground">Vous consultez le workspace sélectionné. Les données du tableau de bord seront connectées aux endpoints runtime dans la prochaine étape.</p><div className="mt-4 rounded-md border border-primary/30 bg-primary/5 p-3 text-xs text-primary">Bêta — les API et formats d'événements peuvent changer.</div></Card>
       </div>
     </>
   );
@@ -266,6 +267,7 @@ function Modal({ title, eyebrow, onClose, children }: { title: string; eyebrow: 
 }
 
 export function CohortDashboard() {
+  const { workspace, session } = useActiveWorkspace();
   const [tab, setTab] = useState<Tab>("Vue d'ensemble");
   const [resolving, setResolving] = useState<Branch | null>(null);
   const [creating, setCreating] = useState(false);
@@ -273,7 +275,7 @@ export function CohortDashboard() {
     <div className="flex min-h-screen bg-background text-foreground">
       <aside className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-sidebar-border bg-sidebar md:flex">
         <div className="flex items-center gap-2.5 px-5 py-5"><div className="grid size-8 place-items-center rounded-md bg-primary font-bold text-primary-foreground glow-primary">C</div><div><p className="text-sm font-semibold">Cohort</p><p className="text-[11px] text-muted-foreground">cerbere · beta</p></div></div>
-        <div className="mx-3 mb-3 flex items-center justify-between rounded-md border border-sidebar-border px-3 py-2 text-xs"><span className="flex items-center gap-2"><span className="size-2 rounded-full bg-success" />main</span><ChevronRight className="size-3 text-muted-foreground" /></div>
+        <div className="mx-3 mb-3 flex items-center justify-between rounded-md border border-sidebar-border px-3 py-2 text-xs"><span className="flex min-w-0 items-center gap-2"><span className="size-2 shrink-0 rounded-full bg-success" /><span className="truncate">{workspace.name}</span></span><ChevronRight className="size-3 shrink-0 text-muted-foreground" /></div>
         <nav className="flex-1 space-y-0.5 px-3">
           <p className="px-2 pb-1 pt-2 font-mono text-[10px] tracking-widest text-muted-foreground">WORKSPACE</p>
           {nav.map(({ tab: t, icon: I }) => (
@@ -285,7 +287,7 @@ export function CohortDashboard() {
         </nav>
         <div className="m-3 rounded-md border border-sidebar-border p-3">
           <div className="flex items-center gap-2 text-xs"><Activity className="size-3.5 text-success" />API · 42 ms</div>
-          <div className="mt-3 flex items-center gap-2"><div className="grid size-7 place-items-center rounded-full bg-accent text-xs font-semibold">C</div><div className="min-w-0"><p className="truncate text-xs font-medium">christopher@cohort.dev</p><p className="text-[10px] text-muted-foreground">Admin</p></div></div>
+          <div className="mt-3 flex items-center gap-2"><div className="grid size-7 place-items-center rounded-full bg-accent text-xs font-semibold">C</div><div className="min-w-0"><p className="truncate text-xs font-medium">{session.user.email || "Signed in"}</p><p className="text-[10px] capitalize text-muted-foreground">{workspace.role}</p></div></div>
         </div>
       </aside>
       <div className="flex min-w-0 flex-1 flex-col">
