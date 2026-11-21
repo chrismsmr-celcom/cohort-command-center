@@ -1,10 +1,19 @@
-import { useCallback, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { ChevronDown, LogOut, RefreshCw, Layers3 } from "lucide-react";
 import { AuthGate } from "./AuthGate";
 import { signOut, type CohortSession } from "@/lib/cohort-auth";
 import { listWorkspaces, type CohortWorkspace } from "@/lib/cohort-workspaces";
 
 const ACTIVE_WORKSPACE_KEY = "cohort.active-workspace";
+
+type ActiveWorkspaceContextValue = { workspace: CohortWorkspace; session: CohortSession };
+const ActiveWorkspaceContext = createContext<ActiveWorkspaceContextValue | null>(null);
+
+export function useActiveWorkspace() {
+  const value = useContext(ActiveWorkspaceContext);
+  if (!value) throw new Error("useActiveWorkspace must be used inside WorkspaceGate");
+  return value;
+}
 
 export function WorkspaceGate({ children }: { children: (workspace: CohortWorkspace, session: CohortSession) => React.ReactNode }) {
   const [session, setSession] = useState<CohortSession | null>(null);
@@ -52,7 +61,7 @@ export function WorkspaceGate({ children }: { children: (workspace: CohortWorksp
       </header>
       {error ? <div role="alert" className="mx-auto mt-6 max-w-3xl rounded-md border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">{error}</div> : null}
       {!loading && !error && workspaces.length === 0 ? <div className="mx-auto mt-16 max-w-lg rounded-xl border border-border bg-card p-8 text-center"><h2 className="text-lg font-semibold">No workspace available</h2><p className="mt-2 text-sm text-muted-foreground">Your account is authenticated, but the API returned no active workspace membership. Ask an owner to invite you or check the provisioning migration.</p></div> : null}
-      {active && children(active, session)}
+      {active && <ActiveWorkspaceContext.Provider value={{ workspace: active, session }}>{children(active, session)}</ActiveWorkspaceContext.Provider>}
     </div>
   );
 }
